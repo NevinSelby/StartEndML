@@ -9,3 +9,4 @@ streamlit-pandas-profiling
 pandas-profiling
 pycaret
 xgboost
+streamlit_authenticator
