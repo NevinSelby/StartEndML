@@ -1,5 +1,5 @@
 import streamlit as st
-# import plotly.express as px
+import plotly.express as px
 import pycaret
 import pandas_profiling
 import pandas as pd
@@ -33,26 +33,19 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.svm import SVR
 from sklearn.model_selection import GridSearchCV
 
-# if os.path.exists('./dataset.csv'): 
-#     df = pd.read_csv('dataset.csv', index_col=None)
-
-
 #For Login Page
 import streamlit_authenticator as stauth
 import yaml
 from yaml import SafeLoader
 
-hashed_passwords = stauth.Hasher(['123', '456']).generate()
-with open('config.yaml') as file:
-    config = yaml.load(file, Loader=SafeLoader)
+import database as db
 
-authenticator = stauth.Authenticate(
-    config['credentials'],
-    config['cookie']['name'],
-    config['cookie']['key'],
-    config['cookie']['expiry_days'],
-    config['preauthorized']
-)
+users = db.fetch_all_users()
+usernames = [user['key'] for user in users]
+names = [user["name"] for user in users]
+hashed_passwords = [user['password'] for user in users]
+
+authenticator = stauth.Authenticate(names, usernames, hashed_passwords, 'startendml', 'abcdef', cookie_expiry_days=30)
 
 def login_page():
     flag = 0
@@ -74,11 +67,12 @@ def login_page():
 name, authentication_status, username, flag = login_page()
 
 if flag == 0:
-    col1, col2, col3= st.columns(3)
+    col1, col2 = st.columns(2)
     with col1:
         if st.button('Register'):
             try:
                 if authenticator.register_user('Register user', preauthorization=False):
+                    db.insert_user(st.session_state["username"], st.session_state["name"], st.session_state["hashed_password"])
                     st.success('User registered successfully')
                     login_page()
             except Exception as e:
@@ -89,25 +83,13 @@ if flag == 0:
             try:
                 username_forgot_pw, email_forgot_password, random_password = authenticator.forgot_password('Forgot password')
                 if username_forgot_pw:
+                    db.update_user(username_forgot_pw, {"password":random_password})
                     st.success('New password sent securely')
                     # Random password to be transferred to user securely
                 elif username_forgot_pw == False:
                     st.error('Username not found')
             except Exception as e:
                 st.error(e)
-
-    with col3:
-        if st.button('Forgot Username'):
-            try:
-                username_forgot_username, email_forgot_username = authenticator.forgot_username('Forgot username')
-                if username_forgot_username:
-                    st.success('Username sent securely')
-                    # Username to be transferred to user securely
-                elif username_forgot_username == False:
-                    st.error('Email not found')
-            except Exception as e:
-                st.error(e)
-
 
 
 if authentication_status:
@@ -124,8 +106,6 @@ if authentication_status:
         if file: 
             df = pd.read_csv(file, index_col=None)
             df.to_csv('dataset.csv', index=None)
-            # df = df.dtypes.astype('int64')
-            # print(df.dtypes)
             st.dataframe(df)
 
     if choice == "EDA":
