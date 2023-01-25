@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DETA_KEY = os.getenv(DATA_KEY)
+DETA_KEY = os.getenv("DATA_KEY")
 
 deta = Deta(DETA_KEY)
 
