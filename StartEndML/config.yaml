@@ -1,0 +1,13 @@
+cookie:
+  expiry_days: 30
+  key: some_signature_key
+  name: some_cookie_name
+credentials:
+  usernames:
+    hello:
+      email: hello@hello.com
+      name: hello
+      password: $2b$12$iUdX/ou15Q/vixU5ixUpg.xSSp7Y0tjdTbrmt5VvdGBy7ALTZc6nG
+preauthorized:
+  emails:
+  - melsby@gmail.com
