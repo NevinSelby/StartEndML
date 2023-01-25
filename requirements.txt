@@ -8,3 +8,5 @@ streamlit==1.7.0
 streamlit-pandas-profiling
 pandas-profiling
 pycaret
+xgboost
+yaml
