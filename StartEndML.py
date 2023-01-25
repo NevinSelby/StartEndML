@@ -1,5 +1,5 @@
 import streamlit as st
-import plotly.express as px
+# import plotly.express as px
 import pycaret
 import pandas_profiling
 import pandas as pd
