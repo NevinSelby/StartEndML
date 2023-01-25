@@ -11,4 +11,3 @@ pycaret
 xgboost
 streamlit_authenticator
 deta
-dotenv
