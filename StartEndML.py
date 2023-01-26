@@ -45,26 +45,35 @@ usernames = [user['key'] for user in users]
 names = [user["name"] for user in users]
 hashed_passwords = [user['password'] for user in users]
 
-authenticator = stauth.Authenticate(names, usernames, hashed_passwords, 'startendml', 'abcdef', cookie_expiry_days=30)
+# hashed_passwords = stauth.Hasher(passwords).generate()
+
+credentials = {"usernames":{}}
+
+for un, name, pw in zip(usernames, names, hashed_passwords):
+    user_dict = {"name":name,"password":pw}
+    credentials["usernames"].update({un:user_dict})
+
+print(credentials)
+
+authenticator = stauth.Authenticate(credentials, "startendml", "abcdef", cookie_expiry_days=30)
+print("authenticator = ", authenticator)
 
 def login_page():
     flag = 0
-    name, authentication_status, username = authenticator.login('Login', 'main')
+    name, authentication_status, username = authenticator.login("Login", "main")
 
-    if st.session_state["authentication_status"]:
-        authenticator.logout('Logout', 'main')
-        # st.write(f'Welcome *{st.session_state["name"]}*')
-        # st.title('Some content')
+    if authentication_status:
         flag = 1
-    elif st.session_state["authentication_status"] == False:
+    elif authentication_status == False:
         st.error('Username/password is incorrect')
-    elif st.session_state["authentication_status"] == None:
+    elif authentication_status == None:
         st.warning('Please enter your username and password')
 
     return name, authentication_status, username, flag
 
 
 name, authentication_status, username, flag = login_page()
+print(name, authentication_status, username, flag)
 
 if flag == 0:
     col1, col2 = st.columns(2)
@@ -72,7 +81,6 @@ if flag == 0:
         if st.button('Register'):
             try:
                 if authenticator.register_user('Register user', preauthorization=False):
-                    db.insert_user(st.session_state["username"], st.session_state["name"], st.session_state["hashed_password"])
                     st.success('User registered successfully')
                     login_page()
             except Exception as e:
@@ -94,12 +102,23 @@ if flag == 0:
 
 if authentication_status:
     with st.sidebar:
+        authenticator.logout('Logout', 'main')
+        st.write('Welcome *%s*' % (name))
         st.image("https://www.onepointltd.com/wp-content/uploads/2020/03/inno2.png")
         st.title("Start to End Machine Learning")
         choice = st.radio("Navigation", ["Home", "Upload", "EDA", 'Data Cleaning', "Modelling", "Model Interpretation", "Download", "Account"])
         st.info("This website helps you build and explore your data.")
     if choice == "Home":
-        st.write("This is home!")
+        st.title("Welcome to my Start to End ML Website!")
+        st.write("""
+
+My goal is to make the process of analyzing and selecting the best machine learning model for your dataset as easy and efficient as possible. With my website, you can input your dataset and let the system take care of the rest.
+
+My website will automatically clean and preprocess your data, perform exploratory data analysis, and suggest the best machine learning models for your data along with their respective accuracies. This will save you time and effort in the data analysis process and help you make more informed decisions on which model to use for your project.
+
+In the future, I also plan to incorporate explainable AI (XAI) to provide increased transparency and understanding of the model's decision-making process.
+
+Thank you for choosing my Start to End ML Website for your data analysis needs. I hope you find it helpful and user-friendly.""")
     if choice == "Upload":
         st.title("Upload Your Dataset")
         file = st.file_uploader("Upload Your Dataset")
