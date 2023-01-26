@@ -2,9 +2,9 @@ import os
 from deta import Deta
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(".env")
 
-DETA_KEY = os.getenv("DATA_KEY")
+DETA_KEY = os.getenv("DETA_KEY")
 
 deta = Deta(DETA_KEY)
 
