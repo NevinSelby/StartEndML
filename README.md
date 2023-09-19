@@ -2,7 +2,7 @@
 
 <a href="https://starttoendml.streamlit.app/">VIEW WEBSITE</a> 
 
--------- Facing issues with Register User section. Till then use username and password as hello1 --------- <br>
+-------- Facing issues with the website view. Trying to resolve it as soon as possible --------- <br>
 Welcome to my Start to End ML Project!
 
 My goal is to make the process of analyzing and selecting the best machine learning model for your dataset as easy and efficient as possible. With my website, you can input your dataset and let the system take care of the rest.
