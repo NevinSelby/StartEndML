@@ -40,70 +40,11 @@ from yaml import SafeLoader
 
 import database as db
 
-users = db.fetch_all_users()
-usernames = [user['key'] for user in users]
-names = [user["name"] for user in users]
-hashed_passwords = [user['password'] for user in users]
-
-# hashed_passwords = stauth.Hasher(passwords).generate()
-
-credentials = {"usernames":{}}
-
-for un, name, pw in zip(usernames, names, hashed_passwords):
-    user_dict = {"name":name,"password":pw}
-    credentials["usernames"].update({un:user_dict})
-
-print(credentials)
-
-authenticator = stauth.Authenticate(credentials, "startendml", "abcdef", cookie_expiry_days=30)
-print("authenticator = ", authenticator)
-
-def login_page():
-    flag = 0
-    name, authentication_status, username = authenticator.login("Login", "main")
-
-    if authentication_status:
-        flag = 1
-    elif authentication_status == False:
-        st.error('Username/password is incorrect')
-    elif authentication_status == None:
-        st.warning('Please enter your username and password')
-
-    return name, authentication_status, username, flag
-
-
-name, authentication_status, username, flag = login_page()
-print(name, authentication_status, username, flag)
-
-if flag == 0:
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button('Register'):
-            try:
-                if authenticator.register_user('Register user', preauthorization=False):
-                    st.success('User registered successfully')
-                    login_page()
-            except Exception as e:
-                st.error(e)
-
-    with col2:
-        if st.button('Forgot Password'):
-            try:
-                username_forgot_pw, email_forgot_password, random_password = authenticator.forgot_password('Forgot password')
-                if username_forgot_pw:
-                    db.update_user(username_forgot_pw, {"password":random_password})
-                    st.success('New password sent securely')
-                    # Random password to be transferred to user securely
-                elif username_forgot_pw == False:
-                    st.error('Username not found')
-            except Exception as e:
-                st.error(e)
-
+authentication_status = 1
 
 if authentication_status:
     with st.sidebar:
-        authenticator.logout('Logout', 'main')
-        st.write('Welcome *%s*' % (name))
+        st.write('Welcome to this website!!')
         st.image("https://www.onepointltd.com/wp-content/uploads/2020/03/inno2.png")
         st.title("Start to End Machine Learning")
         choice = st.radio("Navigation", ["Home", "Upload", "EDA", 'Data Cleaning', "Modelling", "Model Interpretation", "Download", "Account"])
@@ -189,7 +130,7 @@ Thank you for choosing my Start to End ML Website for your data analysis needs. 
                 best_model_obj = None
                 best_score = -np.inf
                 for model_name, model in models:
-                    grid = RandomizedSearchCV(estimator=model, param_grid=param_grid[model_name], cv=5, n_jobs=3)
+                    grid = RandomizedSearchCV(estimator=model, param_distributions=param_grid[model_name], cv=5, n_jobs=3)
                     grid.fit(X, y)
                     if grid.best_score_ > best_score:
                         best_score = grid.best_score_
@@ -252,21 +193,3 @@ Thank you for choosing my Start to End ML Website for your data analysis needs. 
                 st.download_button('Download Model', f, file_name="best_model.pkl")
         except:
             st.error("Please complete the Modelling section first")
-
-    if choice == "Account":
-        if authentication_status:
-            try:
-                if authenticator.reset_password(username, 'Reset password'):
-                    st.success('Password modified successfully')
-            except Exception as e:
-                st.error(e)
-
-        if authentication_status:
-            try:
-                if authenticator.update_user_details(username, 'Update user details'):
-                    st.success('Entries updated successfully')
-            except Exception as e:
-                st.error(e)
-
-        with open('config.yaml', 'w') as file:
-            yaml.dump(config, file, default_flow_style=False)
