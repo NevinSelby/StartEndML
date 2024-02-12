@@ -1,14 +1,10 @@
 import streamlit as st
 import plotly.express as px
-import pycaret
-import pandas_profiling
 import pandas as pd
 import numpy as np
 from streamlit_pandas_profiling import st_profile_report
-import os
 import pickle
 
-from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import RandomizedSearchCV
 
 #classification models
@@ -18,8 +14,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.naive_bayes import GaussianNB
 from xgboost import XGBClassifier
-from sklearn import model_selection
-from sklearn.utils import class_weight
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
@@ -31,14 +25,7 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.svm import SVR
-from sklearn.model_selection import GridSearchCV
 
-#For Login Page
-import streamlit_authenticator as stauth
-import yaml
-from yaml import SafeLoader
-
-import database as db
 
 authentication_status = 1
 
