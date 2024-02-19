@@ -1,12 +1,10 @@
-matplotlib==3.5.2
-matplotlib-inline==0.1.3
+matplotlib
+matplotlib-inline
 numpy
 pandas
 plotly
-seaborn==0.11.2
-streamlit==1.7.0
+seaborn
+scikit-learn
+streamlit
 streamlit-pandas-profiling
-pandas-profiling
 xgboost
-streamlit_authenticator
-python-dotenv
